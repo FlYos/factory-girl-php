@@ -12,17 +12,13 @@
         "tdd"
     ],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Grayson Koonce",
-            "email": "breerly@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "Grayson Koonce",
+        "email": "breerly@gmail.com"
+    }],
     "require": {
-        "php": ">=5.4.0",
-        "doctrine/orm": ">=2.2.1,<2.6-dev",
-        "doctrine/dbal": ">=2.2.1,<2.6-dev",
-        "doctrine/common": ">=2.2.1,<2.6-dev"
+        "php": ">=5.6.0",
+        "doctrine/orm": "^2.5"
     },
     "autoload": {
         "psr-0": {
