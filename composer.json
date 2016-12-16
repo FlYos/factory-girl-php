@@ -1,5 +1,5 @@
 {
-    "name": "breerly/factory-girl-php",
+    "name": "flyos/factory-girl-php",
     "type": "library",
     "description": "Fixture replacement for focused and readable tests - A PHP port of Thoughtbot's Ruby Factory Girl",
     "keywords": [
@@ -13,8 +13,8 @@
     ],
     "license": "MIT",
     "authors": [{
-        "name": "Grayson Koonce",
-        "email": "breerly@gmail.com"
+        "name": "Steven Titren",
+        "email": "contact@webaki.com"
     }],
     "require": {
         "php": ">=5.6.0",
