@@ -148,7 +148,7 @@ class FixtureFactory
             $ent->$fieldName = $fieldValue;
         }
         elseif($def->hasPublicSetter($fieldName)) {
-            $ent->{'set'.$fieldName}($fieldValue);
+            $ent->{'set'.ucfirst($fieldName)}($fieldValue);
         }
         elseif ($metadata->isCollectionValuedAssociation($fieldName)) {
             $metadata->setFieldValue($ent, $fieldName, $this->createCollectionFrom($fieldValue));

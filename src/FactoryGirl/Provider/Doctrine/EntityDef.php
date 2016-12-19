@@ -183,7 +183,7 @@ class EntityDef
             return false;
 
         return $this->reflectedClass->hasMethod(
-            'set' . $propertyName
+            'set' . ucfirst($propertyName)
         );
     }
 }
