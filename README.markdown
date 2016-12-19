@@ -47,7 +47,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         // that they are not administrators by default and
         // that they point to a Group entity.
         $this->factory->defineEntity('User', array(
-            'username' => FieldDef::sequence("user_%d"),
+            'username' => FieldDef::faker()->username,
             'administrator' => false,
             'group' => FieldDef::reference('Group')
         ));
@@ -55,7 +55,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         // Define a Group to just have a unique name as above.
         // The order of the definitions does not matter.
         $this->factory->defineEntity('Group', array(
-            'name' => FieldDef::sequence("group_%d")
+            'name' => FieldDef::faker()->sentence()
         ));
 
 
@@ -123,7 +123,7 @@ You can give an 'afterCreate' callback to be called after an entity is created a
 ```php
 <?php
 $factory->defineEntity('User', array(
-    'username' => FieldDef::sequence("user_%d"),
+    'username' => FieldDef::faker()->username,
 ), array(
     'afterCreate' => function(User $user, array $fieldValues) {
         $user->__construct($fieldValues['username']);
@@ -136,15 +136,15 @@ $factory->defineEntity('User', array(
 ```php
 <?php
 
+use AppBundle\Entity\EntityName;
+
 // Defining entities
-$factory->defineEntity('EntityName', array(
+$factory->defineEntity(EntityName::class, array(
     'simpleField' => 'constantValue',
 
-    'generatedField' => function($factory) { return ...; },
-
-    'sequenceField1' => FieldDef::sequence('name-%d'), // name-1, name-2, ...
-    'sequenceField2' => FieldDef::sequence('name-'),   // the same
-    'sequenceField3' => FieldDef::sequence(function($n) { return "name-$n"; }),
+    'generatedField' => FieldDef::faker()->paragraphs(5, true),
+    'dateField' => FieldDef::faker()->dateTime('-1 year'),
+    'localizedField' => FieldDef::faker('fr_FR')->phoneNumber,
 
     'referenceField' => FieldDef::reference('OtherEntity')
 ), array(
@@ -154,16 +154,16 @@ $factory->defineEntity('EntityName', array(
 ));
 
 // Getting an entity (new or singleton)
-$factory->get('EntityName', array('field' => 'value'));
+$factory->get(EntityName::class, array('field' => 'value'));
 
 // Getting an array of entities
 $numberOfEntities = 15;
-$factory->getList('EntityName', array('field' => 'value'), $numberOfEntities);
+$factory->getList(EntityName::class, array('field' => 'value'), $numberOfEntities);
 
 // Singletons
-$factory->getAsSingleton('EntityName', array('field' => 'value'));
-$factory->setSingleton('EntityName', $entity);
-$factory->unsetSingleton('EntityName');
+$factory->getAsSingleton(EntityName::class, array('field' => 'value'));
+$factory->setSingleton(EntityName::class, $entity);
+$factory->unsetSingleton(EntityName::class);
 
 // Configuration
 $this->factory->setEntityNamespace('What\Ever');  // Default: empty
