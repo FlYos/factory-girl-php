@@ -143,8 +143,14 @@ class FixtureFactory
     protected function setField($ent, EntityDef $def, $fieldName, $fieldValue)
     {
         $metadata = $def->getEntityMetadata();
-        
-        if ($metadata->isCollectionValuedAssociation($fieldName)) {
+
+        if($def->isPublicProperty($fieldName)) {
+            $ent->$fieldName = $fieldValue;
+        }
+        elseif($def->hasPublicSetter($fieldName)) {
+            $ent->{'set'.$fieldName}($fieldValue);
+        }
+        elseif ($metadata->isCollectionValuedAssociation($fieldName)) {
             $metadata->setFieldValue($ent, $fieldName, $this->createCollectionFrom($fieldValue));
         } else {
             $metadata->setFieldValue($ent, $fieldName, $fieldValue);
@@ -206,13 +212,18 @@ class FixtureFactory
     {
         unset($this->singletons[$name]);
     }
-    
+
     /**
      * Defines how to create a default entity of type `$name`.
-     * 
+     *
      * See the readme for a tutorial.
-     * 
+     *
+     * @param string $name
+     * @param array  $fieldDefs
+     * @param array  $config
+     *
      * @return FixtureFactory
+     * @throws Exception
      */
     public function defineEntity($name, array $fieldDefs = array(), array $config = array())
     {

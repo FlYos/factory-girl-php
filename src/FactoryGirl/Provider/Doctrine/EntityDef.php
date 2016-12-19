@@ -1,6 +1,7 @@
 <?php
 namespace FactoryGirl\Provider\Doctrine;
 
+use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadata,
     Exception;
@@ -10,6 +11,7 @@ use Doctrine\ORM\EntityManager,
  */
 class EntityDef
 {
+
     private $name;
     
     private $entityType;
@@ -22,24 +24,31 @@ class EntityDef
     private $fieldDefs;
     
     private $config;
+
+    /**
+     * @var \ReflectionClass
+     */
+    protected $reflectedClass;
     
     public function __construct(EntityManager $em, $name, $type, array $fieldDefs, array $config)
     {
         $this->name = $name;
         $this->entityType = $type;
         $this->metadata = $em->getClassMetadata($type);
+        $this->reflectedClass = new \ReflectionClass($type);
         $this->fieldDefs = array();
         $this->config = $config;
         
         $this->readFieldDefs($fieldDefs);
         $this->defaultDefsFromMetadata();
+
+
     }
     
     private function readFieldDefs(array $params)
     {
         foreach ($params as $key => $def) {
-            if ($this->metadata->hasField($key) ||
-                    $this->metadata->hasAssociation($key)) {
+            if ($this->hasProperty($key)) {
                 $this->fieldDefs[$key] = $this->normalizeFieldDef($def);
             } else {
                 throw new Exception('No such field in ' . $this->entityType . ': ' . $key);
@@ -100,6 +109,11 @@ class EntityDef
     {
         return $this->metadata;
     }
+
+    public function getReflexionClass()
+    {
+        return $this->reflectedClass;
+    }
     
     /**
      * Returns the extra configuration array of the entity definition.
@@ -128,5 +142,48 @@ class EntityDef
                 return call_user_func_array($f, func_get_args());
             };
         }
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return bool
+     */
+    private function hasProperty($property)
+    {
+        return $this->metadata->hasField($property)
+            || $this->metadata->hasAssociation($property)
+            || $this->isPublicProperty($property)
+            || $this->hasPublicSetter($property);
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return bool
+     */
+    public function isPublicProperty($propertyName)
+    {
+        if(!$this->reflectedClass->hasProperty($propertyName))
+            return false;
+
+        $property = $this->reflectedClass->getProperty($propertyName);
+
+        return $property->isPublic();
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return bool
+     */
+    public function hasPublicSetter($propertyName)
+    {
+        if(!$this->reflectedClass->hasProperty($propertyName))
+            return false;
+
+        return $this->reflectedClass->hasMethod(
+            'set' . $propertyName
+        );
     }
 }

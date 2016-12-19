@@ -172,4 +172,36 @@ class BasicUsageTest extends TestCase
 
         $this->assertCount(5, $this->factory->getList('SpaceShip', array(), 5));
     }
+
+    /**
+     * @test
+     */
+    public function canSetPublicPropertyWhithoutAnnotation()
+    {
+        $this->factory->defineEntity('SpaceShip');
+        $this->factory->defineEntity('Person', [
+            'spaceShip' => FieldDef::reference('SpaceShip'),
+            'teamName' => 'My Über team',
+        ]);
+
+        $this->assertEquals(
+            'My Über team', $this->factory->get('Person')->teamName
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function canSetProtectedPropertyWithoutAnnotationButWithSetter()
+    {
+        $this->factory->defineEntity('SpaceShip');
+        $this->factory->defineEntity('Person', [
+            'spaceShip' => FieldDef::reference('SpaceShip'),
+            'rank' => 5,
+        ]);
+
+        $this->assertEquals(
+            5, $this->factory->get('Person')->getRank()
+        );
+    }
 }
